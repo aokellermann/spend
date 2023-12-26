@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Local": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Plaid__ClientId": "",
+        "Plaid__Secret": "",
+        "Auth__Authority": "",
+        "Auth__Audience": "",
+        "Database__ConnectionString": "",
+        "Database__Password": ""
+      }
+    }
+  }
+}
