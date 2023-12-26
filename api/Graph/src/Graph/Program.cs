@@ -40,7 +40,7 @@ builder.Services
     .AddProjections()
     .AddFiltering()
     .AddSorting()
-    .AddSpendTypes()
+    .AddGraphTypes()
     .RegisterDbContext<SpendDbContext>()
     .RegisterService<ITopicEventSender>()
     .RegisterService<PlaidClient>()
