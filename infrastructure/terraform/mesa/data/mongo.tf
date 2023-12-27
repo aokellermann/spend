@@ -17,6 +17,12 @@ resource "mongodbatlas_project_ip_access_list" "allow_me" {
   ip_address = "198.55.239.10"
 }
 
+resource "mongodbatlas_project_ip_access_list" "allow_nj" {
+  project_id = var.mongo_project
+
+  ip_address = "66.30.234.130"
+}
+
 # todo: aws sg
 
 #resource "mongodbatlas_project_ip_access_list" "allow_me_aws" {
