@@ -7,24 +7,18 @@ using Going.Plaid.Identity;
 using Going.Plaid.Investments;
 using Going.Plaid.Item;
 using Going.Plaid.Liabilities;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 
-namespace Graph.Domain.Entities;
+namespace Graph.Domain.Entities.Items;
 
-[Index(nameof(UserId))]
-public class ItemLink
+public class ItemLink : IHasTenant, IAuditable
 {
-    [Key]
-    public long Id { get; set; }
+    public ObjectId Id { get; set; }
 
-    public Guid UserId { get; set; }
+    public Guid UserId { get; init; }
 
-    [Unicode(false)]
-    [MaxLength(64)]
     public string ItemId { get; set; }
 
-    [Unicode(false)]
-    [MaxLength(64)]
     [GraphQLIgnore]
     public string AccessToken { get; set; }
 

@@ -1,13 +1,12 @@
 using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Link;
-using Graph.GraphQL.Mutations.Item;
 using Graph.Infrastructure;
 using Graph.Infrastructure.Plaid;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
 
-namespace Graph.GraphQL.Mutations.Plaid;
+namespace Graph.GraphQL.Mutations.Items;
 
 [ExtendObjectType(OperationType.Mutation)]
 public class CreateLinkTokenMutation

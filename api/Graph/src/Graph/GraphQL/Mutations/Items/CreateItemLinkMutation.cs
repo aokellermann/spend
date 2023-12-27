@@ -1,10 +1,12 @@
 using Going.Plaid;
 using Going.Plaid.Item;
+using Graph.Domain.Entities.Items;
 using Graph.Infrastructure;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
+using MongoDB.Driver;
 
-namespace Graph.GraphQL.Mutations.Item;
+namespace Graph.GraphQL.Mutations.Items;
 
 [ExtendObjectType(OperationType.Mutation)]
 public class CreateItemLinkMutation
@@ -16,24 +18,23 @@ public class CreateItemLinkMutation
     }
 
     [Authorize]
-    public async Task<Domain.Entities.ItemLink> CreateItemLink(Request request, UserContext ctx, PlaidClient plaid, SpendDbContext db)
+    public async Task<ItemLink> CreateItemLink(Request request, UserContext ctx, PlaidClient plaid,
+        SpendDb db)
     {
         var res = await plaid.ItemPublicTokenExchangeAsync(new ItemPublicTokenExchangeRequest
         {
             PublicToken = request.PublicToken
         });
-
-        var entity = await db.ItemLink.AddAsync(new Domain.Entities.ItemLink
+        var item = new ItemLink
         {
             ItemId = res.ItemId,
             UserId = ctx.UserId!.Value,
             AccessToken = res.AccessToken,
             InsertedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
-        });
+        };
+        await db.ItemLinks.InsertOneAsync(item, new InsertOneOptions());
 
-        await db.SaveChangesAsync();
-
-        return entity.Entity;
+        return item;
     }
 }

@@ -19,18 +19,12 @@
         <PackageReference Include="HotChocolate.AspNetCore" Version="13.8.1" />
         <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.8.1" />
         <PackageReference Include="HotChocolate.Data" Version="13.8.1" />
-        <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.8.1" />
+        <PackageReference Include="HotChocolate.Data.MongoDb" Version="13.8.1" />
         <PackageReference Include="HotChocolate.Types.Analyzers" Version="13.8.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.14" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+        <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     </ItemGroup>
 </Project>

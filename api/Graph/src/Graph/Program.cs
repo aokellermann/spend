@@ -3,11 +3,19 @@ using System.Text.Json;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Going.Plaid;
+using Graph.Domain.Entities.Items;
+using Graph.Domain.Entities.Transactions;
 using Graph.Infrastructure;
+using Graph.Types;
 using HotChocolate.Subscriptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,15 +46,22 @@ builder.Services
     // .AddDefaultTransactionScopeHandler()
     // .AddSubscriptionType()
     .AddProjections()
+    .AddMongoDbProjections()
     .AddFiltering()
+    .AddMongoDbFiltering()
     .AddSorting()
+    .AddMongoDbSorting()
     .AddGraphTypes()
-    .RegisterDbContext<SpendDbContext>()
+    .RegisterService<SpendDb>()
     .RegisterService<ITopicEventSender>()
     .RegisterService<PlaidClient>()
     .RegisterService<IHttpContextAccessor>()
     .RegisterService<UserContext>()
     .AddAuthorization()
+    .TryAddTypeInterceptor<PlaidTypeInterceptor>()
+    .BindRuntimeType<ObjectId, IdType>()
+    .AddTypeConverter<ObjectId, string>(o => o.ToString())
+    .AddTypeConverter<string, ObjectId>(ObjectId.Parse)
     ;
 
 builder.Services.AddHttpContextAccessor();
@@ -58,9 +73,27 @@ builder.Services
     .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 // database
-builder.Services.AddDbContext<SpendDbContext>(x =>
-    x.UseNpgsql(builder.Configuration["Database:ConnectionString"] + ";Password=" +
-                builder.Configuration["Database:Password"]));
+var conventionPack = new ConventionPack { new CamelCaseElementNameConvention() };
+ConventionRegistry.Register("camelCase", conventionPack, _ => true);
+#pragma warning disable CS0618
+BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
+BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
+#pragma warning restore CS0618
+BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+builder.Services.AddScoped<IMongoDatabase>(
+    _ =>
+    {
+        var connectionString = builder.Configuration["Mongo:ConnectionString"]!
+            .Replace("<password>", builder.Configuration["Mongo:Password"]!);
+        var settings = MongoClientSettings.FromConnectionString(connectionString);
+        var loggerFactory = LoggerFactory.Create(b =>
+        {
+            b.AddSimpleConsole();
+        });
+        settings.LoggingSettings = new LoggingSettings(loggerFactory);
+        return new MongoClient(settings).GetDatabase("Graph");
+    });
+builder.Services.AddScoped<SpendDb>();
 
 builder.Services.AddPlaid(builder.Configuration);
 
