@@ -3,34 +3,49 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         <AWSProjectType>Lambda</AWSProjectType>
         <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <!-- Generate ready to run images during publishing to improvement cold starts. -->
         <PublishReadyToRun>true</PublishReadyToRun>
-        <RootNamespace>Graph</RootNamespace>
+        <RootNamespace>Spend.Graph</RootNamespace>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.6.1" />
         <PackageReference Include="FairyBread" Version="10.0.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-        <PackageReference Include="Going.Plaid" Version="6.13.0" />
+        <PackageReference Include="Going.Plaid" Version="6.13.0" >
+            <CopyToOutputDirectory>xmldoc</CopyToOutputDirectory>
+        </PackageReference>
         <PackageReference Include="HotChocolate.AspNetCore" Version="13.8.1" />
         <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.8.1" />
         <PackageReference Include="HotChocolate.Data" Version="13.8.1" />
-        <PackageReference Include="HotChocolate.Data.EntityFramework" Version="13.8.1" />
+        <PackageReference Include="HotChocolate.Data.MongoDb" Version="13.8.1" />
         <PackageReference Include="HotChocolate.Types.Analyzers" Version="13.8.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.25" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.14" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
+        <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     </ItemGroup>
+
+    
+    <!-- Generate documentation for libary types https://github.com/dotnet/sdk/issues/9498 -->
+    <Target Name="_ResolveReferenceCopyLocalPaths" AfterTargets="ResolveReferences" DependsOnTargets="_ResolveCopyToOutputDirectory" Inputs="@(PackageReferenceWithCopyToOutputDirectory)" Outputs="%(PackageReferenceWithCopyToOutputDirectory.Identity)">
+        <PropertyGroup>
+            <PackageIdentity>%(PackageReferenceWithCopyToOutputDirectory.Identity)</PackageIdentity>
+        </PropertyGroup>
+        <ItemGroup>
+            <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)' == '$(PackageIdentity)' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+        </ItemGroup>
+    </Target>
+
+    <!-- This target filters all <PackageReference> entries to those with the given condition -->
+    <Target Name="_ResolveCopyToOutputDirectory">
+        <ItemGroup>
+            <PackageReferenceWithCopyToOutputDirectory Include="@(PackageReference)" Condition="'%(PackageReference.CopyToOutputDirectory)' == 'xmldoc'" />
+        </ItemGroup>
+    </Target>
 </Project>

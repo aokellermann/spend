@@ -4,6 +4,10 @@
 
 Spend uses terraform for IaC.
 
+You'll need the following cloud accounts + credentials:
+- AWS
+- MongoDB Atlas
+
 Bootstrap the s3 backend:
 
 ```sh
@@ -35,24 +39,24 @@ terraform -chdir=ciam apply
 terraform -chdir=data apply
 ```
 
-Once the database is created, you can find the password in AWS console. Put
-that in parameter store: `/db/spend/password`.
+Once the database is created, put that in parameter store: `/db/mongo/password`.
+(Todo: how to get password when created through terraform?)
 
 ## Running Locally
 
 ### DB
 
-Spend uses postgres as a RDBMS.
+Spend uses mongodb as document storage.
 
 You can spin up a local docker container with:
 
-```
-docker run -e POSTGRES_PASSWORD=password -e POSTGRES_DB=spenddb --rm -it -p 5432:5432 postgres
+```sh
+docker run -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=password -e MONGO_GRAPH_PASSWORD=password --rm -p 27017:27017 -v "./Migrations/mongo_init.js:/docker-entrypoint-initdb.d/mongo_init.js" -it mongo
 ```
 
 Then, to run database migrations:
 ```sh
-Database__ConnectionString="User ID=postgres;Host=localhost;Db=spenddb" Database__Password="password" dotnet ef database update --project Graph/src/Spend/
+mongosh mongodb://graph:password@localhost/Graph?authSource=test < Migrations/mongo_indexes.js
 ```
 
 ### API
@@ -69,6 +73,16 @@ After adding these variables, you can start the server:
 
 ```sh
 dotnet run --project Graph/src/Spend --profile Local
+```
+
+#### GraphQL IDE
+
+We use [Banana Cake Pop](https://chillicream.com/products/bananacakepop/) as a GraphQL IDE.
+
+You can install as an Arch package:
+
+```sh
+yay -S bananacakepop-bin
 ```
 
 ### App
