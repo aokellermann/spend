@@ -75,6 +75,16 @@ After adding these variables, you can start the server:
 dotnet run --project Graph/src/Spend --profile Local
 ```
 
+#### GraphQL IDE
+
+We use [Banana Cake Pop](https://chillicream.com/products/bananacakepop/) as a GraphQL IDE.
+
+You can install as an Arch package:
+
+```sh
+yay -S bananacakepop-bin
+```
+
 ### App
 
 #### Android
