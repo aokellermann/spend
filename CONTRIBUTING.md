@@ -144,7 +144,7 @@ export CHROME_EXECUTABLE=/bin/google-chrome-stable
 
 To start the app in browser run:
 ```sh
-flutter run -d chrome
+flutter run -d chrome --web-browser-flag "--disable-web-security" 
 ```
 
 #### Android
