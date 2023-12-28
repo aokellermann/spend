@@ -21,17 +21,17 @@ public static class MongoSetup
 #pragma warning restore CS0618
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
-        var connectionString = configuration["Mongo:ConnectionString"]!
-            .Replace("<password>", configuration["Mongo:Password"]!);
-        var settings = MongoClientSettings.FromConnectionString(connectionString);
-        settings.ServerApi = new ServerApi(ServerApiVersion.V1);
+        var connectionString = MongoUrl.Create(configuration["Mongo:ConnectionString"]!
+            .Replace("<password>", configuration["Mongo:Password"]!));
+        var settingsServerApi = new ServerApi(ServerApiVersion.V1);
+        services.AddScoped<IMongoDatabase>(sp =>
+        {
+            var settings = MongoClientSettings.FromUrl(connectionString);
+            settings.ServerApi = settingsServerApi;
+            settings.LoggingSettings = new LoggingSettings(sp.GetRequiredService<ILoggerFactory>());
 
-        var loggerFactory = LoggerFactory.Create(b => { b.AddSimpleConsole(); });
-        settings.LoggingSettings = new LoggingSettings(loggerFactory);
-
-        var client = new MongoClient(settings).GetDatabase("Graph");
-
-        services.AddScoped<IMongoDatabase>(_ => client);
+            return new MongoClient(settings).GetDatabase("Graph");
+        });
         services.AddScoped<SpendDb>();
     }
 }
