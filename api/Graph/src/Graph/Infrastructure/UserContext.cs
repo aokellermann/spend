@@ -1,18 +1,31 @@
 using System.Security.Claims;
 
-namespace Graph.Infrastructure;
+namespace Spend.Graph.Infrastructure;
 
+/// <summary>
+///     Http user context.
+/// </summary>
 public class UserContext
 {
+    /// <summary>
+    ///     Ctor.
+    /// </summary>
+    /// <param name="httpContext">Http context accessor.</param>
     public UserContext(IHttpContextAccessor httpContext)
     {
-        HttpContext = httpContext?.HttpContext ?? throw new ArgumentNullException(nameof(httpContext));
+        HttpContext = httpContext.HttpContext ?? throw new ArgumentNullException(nameof(httpContext));
 
         var userIdString = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         UserId = userIdString != null && Guid.TryParse(userIdString, out var userId) ? userId : null;
     }
 
-    public HttpContext HttpContext { get; set; }
+    /// <summary>
+    ///     The http context.
+    /// </summary>
+    public HttpContext HttpContext { get; }
 
-    public Guid? UserId { get; set; }
+    /// <summary>
+    ///     The authorized user identifier or null if anonymous.
+    /// </summary>
+    public Guid? UserId { get; }
 }

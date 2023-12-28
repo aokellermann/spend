@@ -1,16 +1,28 @@
 using MongoDB.Bson;
+using MongoDB.Driver;
+using Spend.Graph.Domain.Entities.Items;
+using Spend.Graph.Infrastructure;
 
-namespace Graph.Domain.Entities.Transactions;
+namespace Spend.Graph.Domain.Entities.Transactions;
 
-public class Transaction : IHasTenant, IAuditable, IVersioned
+/// <summary>
+///     A financial transaction.
+/// </summary>
+public class Transaction : AuditableEntityWithTenantBase<ObjectId>
 {
-    public ObjectId Id { get; set; }
-    public string ItemId { get; set; }
-    public string PlaidTransactionId { get; set; }
-    public Going.Plaid.Entity.Transaction PlaidTransaction { get; set; }
+    /// <summary>
+    ///     The <see cref="ItemLink"/> identifier associated with the transaction.
+    /// </summary>
+    public ObjectId ItemLinkId { get; init; }
 
-    public Guid UserId { get; set; }
-    public DateTime InsertedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public long Version { get; set; }
+    /// <summary>
+    ///     The <see cref="ItemLink"/> associated with the transaction.
+    /// </summary>
+    public Task<ItemLink> GetItemLink(SpendDb db)
+        => db.ItemLinks.Find(x => x.Id == ItemLinkId).FirstAsync();
+
+    /// <summary>
+    ///     The plaid transaction.
+    /// </summary>
+    public Going.Plaid.Entity.Transaction PlaidTransaction { get; init; } = default!;
 }

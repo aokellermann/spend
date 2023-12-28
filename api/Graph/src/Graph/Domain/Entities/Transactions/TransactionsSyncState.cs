@@ -1,22 +1,31 @@
-using System.ComponentModel.DataAnnotations;
-using Graph.Domain.Entities.Items;
 using MongoDB.Bson;
+using MongoDB.Driver;
+using Spend.Graph.Domain.Entities.Items;
+using Spend.Graph.Infrastructure;
 
-namespace Graph.Domain.Entities.Transactions;
+namespace Spend.Graph.Domain.Entities.Transactions;
 
-public class TransactionsSyncState : IHasTenant, IAuditable, IVersioned
+/// <summary>
+///     Synchronization state for an item's transactions.
+/// </summary>
+public class TransactionsSyncState : AuditableEntityWithTenantBase<ObjectId>
 {
-    public ObjectId Id { get; set; }
+    /// <summary>
+    ///     The <see cref="ItemLink"/> identifier associated with the transaction sync state.
+    /// </summary>
+    public ObjectId ItemLinkId { get; init; }
 
-    public Guid UserId { get; init; }
+    /// <summary>
+    ///     The <see cref="ItemLink"/> associated with the transaction sync state.
+    /// </summary>
+    public Task<ItemLink> GetItemLink(SpendDb db)
+        => db.ItemLinks.Find(x => x.Id == ItemLinkId).FirstAsync();
 
-    public ObjectId ItemLinkId { get; set; }
-
-    public string Cursor { get; set; }
-
-    public long Version { get; set; }
-
-    public DateTime InsertedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
+    /// <summary>
+    ///     Cursor used for fetching any future updates after the latest update provided in this response. The cursor
+    ///     obtained after all pages have been pulled (indicated by has_more being false) will be valid for at least
+    ///     1 year. This cursor should be persisted for later calls. If transactions are not yet available, this will
+    ///     be an empty string.
+    /// </summary>
+    public string Cursor { get; init; } = default!;
 }

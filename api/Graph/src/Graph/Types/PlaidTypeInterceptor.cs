@@ -1,12 +1,11 @@
 using System.Reflection;
 using Going.Plaid;
-using Going.Plaid.Entity;
 using HotChocolate.Configuration;
 using HotChocolate.Data.Filters;
 using HotChocolate.Data.Sorting;
 using HotChocolate.Types.Descriptors.Definitions;
 
-namespace Graph.Types;
+namespace Spend.Graph.Types;
 
 /// <summary>
 ///     Renames all plaid types to $"Plaid{Name}" to eliminate type conflicts.
@@ -16,7 +15,11 @@ public class PlaidTypeInterceptor : TypeInterceptor
     private static readonly Assembly PlaidAssembly = Assembly.GetAssembly(typeof(PlaidClient))!;
     private static readonly Assembly HotChocolateAssembly = Assembly.GetAssembly(typeof(SortInputType))!;
 
-
+    /// <summary>
+    ///     Renames plaid types.
+    /// </summary>
+    /// <param name="completionContext"></param>
+    /// <param name="definition"></param>
     public override void OnBeforeCompleteName(ITypeCompletionContext completionContext, DefinitionBase definition)
     {
         var type = definition switch

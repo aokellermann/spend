@@ -1,14 +1,20 @@
-using Graph.Domain.Entities.Transactions;
-using Graph.Infrastructure;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Driver;
+using Spend.Graph.Domain.Entities.Transactions;
+using Spend.Graph.Infrastructure;
 
-namespace Graph.GraphQL.Queries.Transactions;
+namespace Spend.Graph.GraphQL.Queries.Transactions;
 
+/// <summary>
+///     Get transactions query.
+/// </summary>
 [ExtendObjectType(OperationType.Query)]
 public class GetTransactionsQuery
 {
+    /// <summary>
+    ///     Get transactions.
+    /// </summary>
     [UseProjection]
     [UseSorting]
     [UseFiltering]

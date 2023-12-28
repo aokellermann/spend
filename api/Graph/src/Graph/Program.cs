@@ -3,10 +3,6 @@ using System.Text.Json;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Going.Plaid;
-using Graph.Domain.Entities.Items;
-using Graph.Domain.Entities.Transactions;
-using Graph.Infrastructure;
-using Graph.Types;
 using HotChocolate.Subscriptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Json;
@@ -16,6 +12,8 @@ using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Configuration;
+using Spend.Graph.Infrastructure;
+using Spend.Graph.Types;
 
 var builder = WebApplication.CreateBuilder(args);
 

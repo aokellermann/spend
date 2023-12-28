@@ -1,14 +1,20 @@
-using Graph.Domain.Entities.Transactions;
-using Graph.Infrastructure;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Driver;
+using Spend.Graph.Domain.Entities.Transactions;
+using Spend.Graph.Infrastructure;
 
-namespace Graph.GraphQL.Queries.Transactions;
+namespace Spend.Graph.GraphQL.Queries.Transactions;
 
+/// <summary>
+///     Get transaction sync state query.
+/// </summary>
 [ExtendObjectType(OperationType.Query)]
 public class GetTransactionsSyncStatesQuery
 {
+    /// <summary>
+    ///     Get transaction sync states.
+    /// </summary>
     [UseProjection]
     [UseSorting]
     [UseFiltering]

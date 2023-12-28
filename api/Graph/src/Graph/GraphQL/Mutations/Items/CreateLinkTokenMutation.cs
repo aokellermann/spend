@@ -1,22 +1,37 @@
 using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Link;
-using Graph.Infrastructure;
-using Graph.Infrastructure.Plaid;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
+using Spend.Graph.Infrastructure;
+using Spend.Graph.Infrastructure.Plaid;
 
-namespace Graph.GraphQL.Mutations.Items;
+namespace Spend.Graph.GraphQL.Mutations.Items;
 
+/// <summary>
+///     Create link token mutation.
+/// </summary>
 [ExtendObjectType(OperationType.Mutation)]
 public class CreateLinkTokenMutation
 {
+    /// <summary>
+    ///     Create link token response.
+    /// </summary>
     [GraphQLName(nameof(CreateLinkToken) + nameof(Response))]
     public class Response
     {
-        public string LinkToken { get; set; }
+        /// <summary>
+        ///     A link_token is a token used to initialize Link, and must be provided any time you are presenting your
+        ///     user with the Link interface. You can obtain a Link token by calling /link/token/create. For more
+        ///     details, see the the Token exchange flow. A link_token expires after 4 hours (or after 30 minutes,
+        ///     when being used with update mode).
+        /// </summary>
+        public string LinkToken { get; init; } = default!;
     }
 
+    /// <summary>
+    ///     Creates a link token. See https://plaid.com/docs/link/.
+    /// </summary>
     [Authorize]
     public async Task<Response> CreateLinkToken(UserContext ctx, PlaidClient plaid)
     {

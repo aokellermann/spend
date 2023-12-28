@@ -1,37 +1,56 @@
 using System.Data;
 using Going.Plaid;
 using Going.Plaid.Transactions;
-using Graph.Domain.Entities.Transactions;
-using Graph.Infrastructure;
 using HotChocolate.Authorization;
 using HotChocolate.Language;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using Spend.Graph.Domain.Entities.Transactions;
+using Spend.Graph.Infrastructure;
 
-namespace Graph.GraphQL.Mutations.Transactions;
+namespace Spend.Graph.GraphQL.Mutations.Transactions;
 
+/// <summary>
+///     Sync transactions mutation.
+/// </summary>
 [ExtendObjectType(OperationType.Mutation)]
 public class SyncTransactionsMutation
 {
+    /// <summary>
+    ///     Sync transactions request.
+    /// </summary>
     [GraphQLName(nameof(SyncTransactions) + nameof(Request))]
     public class Request
     {
-        public string ItemId { get; set; }
+        /// <summary>
+        ///     The item link to sync.
+        /// </summary>
+        public ObjectId ItemLinkId { get; init; }
     }
 
+    /// <summary>
+    ///     Sync transactions response.
+    /// </summary>
     [GraphQLName(nameof(SyncTransactions) + nameof(Response))]
     public class Response
     {
-        public TransactionsSyncResponse TransactionsSyncResponse { get; set; }
+        /// <summary>
+        ///     The plaid sync response.
+        /// </summary>
+        public TransactionsSyncResponse TransactionsSyncResponse { get; init; } = default!;
     }
 
+    /// <summary>
+    ///     Sync transactions for an item.
+    /// </summary>
     [Authorize]
     public async Task<Response> SyncTransactions(Request request, UserContext ctx, PlaidClient plaid, SpendDb db)
     {
-        var item = await db.ItemLinks
-            .Find(x => x.UserId == ctx.UserId!.Value && x.ItemId == request.ItemId)
+        var itemLink = await db.ItemLinks
+            .Find(x => x.UserId == ctx.UserId!.Value && x.Id == request.ItemLinkId)
             .FirstAsync();
         var state = await db.TransactionSyncStates
-            .Find(x => x.UserId == ctx.UserId!.Value && x.ItemLinkId == item.Id)
+            .Find(x => x.UserId == ctx.UserId!.Value && x.ItemLinkId == itemLink.Id)
             .FirstOrDefaultAsync();
 
         using var sesh = await db.Db.Client.StartSessionAsync();
@@ -39,14 +58,13 @@ public class SyncTransactionsMutation
 
         var transactions = await plaid.TransactionsSyncAsync(new TransactionsSyncRequest
         {
-            AccessToken = item.AccessToken,
-            Cursor = state?.Cursor
+            AccessToken = itemLink.PlaidAccessToken,
+            Cursor = state?.Cursor != string.Empty ? state?.Cursor : null
         });
 
         var added = transactions.Added.Select(x => new InsertOneModel<Transaction>(new Transaction
         {
-            ItemId = item.ItemId,
-            PlaidTransactionId = x.TransactionId!,
+            ItemLinkId = itemLink.Id,
             PlaidTransaction = x,
             UserId = ctx.UserId!.Value,
             InsertedAt = DateTime.UtcNow,
@@ -56,10 +74,9 @@ public class SyncTransactionsMutation
 
         var updated = transactions.Modified.Select(x =>
             new ReplaceOneModel<Transaction>(
-                Builders<Transaction>.Filter.Eq(y => y.PlaidTransactionId, x.TransactionId), new Transaction
+                Builders<Transaction>.Filter.Eq(y => y.PlaidTransaction.TransactionId, x.TransactionId), new Transaction
                 {
-                    ItemId = item.ItemId,
-                    PlaidTransactionId = x.TransactionId!,
+                    ItemLinkId = itemLink.Id,
                     PlaidTransaction = x,
                     UserId = ctx.UserId!.Value,
                     InsertedAt = DateTime.UtcNow,
@@ -71,7 +88,7 @@ public class SyncTransactionsMutation
             });
 
         var removed = transactions.Removed.Select(x =>
-            new DeleteOneModel<Transaction>(Builders<Transaction>.Filter.Eq(y => y.PlaidTransactionId,
+            new DeleteOneModel<Transaction>(Builders<Transaction>.Filter.Eq(y => y.PlaidTransaction.TransactionId,
                 x.TransactionId)));
 
         var bulkOps = added.Cast<WriteModel<Transaction>>().Concat(updated).Concat(removed).ToArray();
@@ -89,7 +106,7 @@ public class SyncTransactionsMutation
             await db.TransactionSyncStates.InsertOneAsync(new TransactionsSyncState
             {
                 UserId = ctx.UserId!.Value,
-                ItemLinkId = item.Id,
+                ItemLinkId = itemLink.Id,
                 Cursor = nextCursor,
                 Version = 1,
                 InsertedAt = DateTime.UtcNow,
@@ -100,7 +117,7 @@ public class SyncTransactionsMutation
         {
             var filter = Builders<TransactionsSyncState>.Filter.Empty;
             filter &= Builders<TransactionsSyncState>.Filter.Eq(x => x.UserId, ctx.UserId!.Value);
-            filter &= Builders<TransactionsSyncState>.Filter.Eq(x => x.ItemLinkId, item.Id);
+            filter &= Builders<TransactionsSyncState>.Filter.Eq(x => x.ItemLinkId, itemLink.Id);
             filter &= Builders<TransactionsSyncState>.Filter.Eq(x => x.Version, state.Version);
             var updatedCount = await db.TransactionSyncStates
                 .FindOneAndUpdateAsync(filter,

@@ -10,8 +10,6 @@
         "Plaid__Secret": "",
         "Auth__Authority": "",
         "Auth__Audience": "",
-        "Postgres__ConnectionString": "",
-        "Postgres__Password": "",
         "Mongo__ConnectionString": "",
         "Mongo__Password": ""
       }
