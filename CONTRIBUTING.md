@@ -1,5 +1,56 @@
 # Contributing
 
+## Dependencies
+
+### Android
+
+Packages
+1. android-sdk-platform-tools
+2. android-tools
+3. android-udev
+
+### Dotnet
+
+Packages
+1. dotnet-runtime
+2. dotnet-runtime-6.0
+3. dotnet-sdk
+4. dotnet-sdk-6.0
+5. dotnet-targeting-pack
+6. dotnet-targeting-pack-6.0
+
+### ASP.NET
+
+Packages
+1. aspnet-runtime
+2. aspnet-runtime-6.0
+3. aspnet-targeting-pack
+4. aspnet-targeting-pack-6.0
+
+### Terraform
+
+Packages
+1. terraform
+
+### AWS Cli
+
+Packages
+1. aws-cli-v2
+
+### Java 
+You will need the java JDK version 17
+
+Packages
+1. jdk17-openjdk
+
+
+## IDE
+
+We recommend using Rider for backend development and Intellj for frontend development.
+
+TODO: How to setup each editor
+
+
 ## Infrastructure
 
 Spend uses terraform for IaC.
@@ -76,6 +127,25 @@ dotnet run --project Graph/src/Spend --profile Local
 ```
 
 ### App
+
+#### Web
+
+If you are running the app in a browser, first upgrade to the stable flutter branch
+```sh
+flutter channel stable
+flutter upgrade
+```
+
+Sometimes flutter has a hard time finding the correct chrome executable. Set the CHROME_EXECUTABLE environment variable to the correct chrome binary location to resolve this issue.
+eg:
+```sh
+export CHROME_EXECUTABLE=/bin/google-chrome-stable
+```
+
+To start the app in browser run:
+```sh
+flutter run -d chrome
+```
 
 #### Android
 
