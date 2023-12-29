@@ -28,7 +28,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseWebSockets();
-app.MapGraphQLHttp();
+app.MapGraphQLHttp().RequireAuthorization();
 app.MapGraphQLSchema();
 
 await app.RunAsync();

@@ -9,6 +9,14 @@ namespace Spend.Graph.Infrastructure;
 /// </summary>
 public class SpendDb
 {
+    private static readonly IReadOnlyDictionary<Type, string> CollectionNames = new Dictionary<Type, string>()
+    {
+        [typeof(ItemLink)] = "ItemLinks",
+        [typeof(TransactionsSyncState)] = "TransactionSyncStates",
+        [typeof(Transaction)] = "Transactions",
+        [typeof(TransactionCategory)] = "TransactionCategories",
+    };
+
     /// <summary>
     ///     Ctor.
     /// </summary>
@@ -16,15 +24,19 @@ public class SpendDb
     public SpendDb(IMongoDatabase db)
     {
         Db = db;
-        ItemLinks = db.GetCollection<ItemLink>("ItemLinks");
-        TransactionSyncStates = db.GetCollection<TransactionsSyncState>("TransactionsSyncStates");
-        Transactions = db.GetCollection<Transaction>("Transactions");
+        ItemLinks = Collection<ItemLink>();
+        TransactionSyncStates = Collection<TransactionsSyncState>();
+        Transactions = Collection<Transaction>();
+        TransactionCategories = Collection<TransactionCategory>();
     }
 
     /// <summary>
     ///     The mongo database.
     /// </summary>
     public IMongoDatabase Db { get; }
+
+    public IMongoCollection<TEntity> Collection<TEntity>()
+        => Db.GetCollection<TEntity>(CollectionNames[typeof(TEntity)]);
 
     /// <summary>
     ///     Item links collection
@@ -40,4 +52,9 @@ public class SpendDb
     ///     Transactions collection.
     /// </summary>
     public IMongoCollection<Transaction> Transactions { get; }
+
+    /// <summary>
+    ///     Transaction categories collection.
+    /// </summary>
+    public IMongoCollection<TransactionCategory> TransactionCategories { get; }
 }

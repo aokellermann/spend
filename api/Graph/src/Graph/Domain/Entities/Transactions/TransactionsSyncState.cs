@@ -1,7 +1,6 @@
 using MongoDB.Bson;
-using MongoDB.Driver;
 using Spend.Graph.Domain.Entities.Items;
-using Spend.Graph.Infrastructure;
+using Spend.Graph.Infrastructure.DataLoaders;
 
 namespace Spend.Graph.Domain.Entities.Transactions;
 
@@ -18,8 +17,7 @@ public class TransactionsSyncState : AuditableEntityWithTenantBase<ObjectId>
     /// <summary>
     ///     The <see cref="ItemLink"/> associated with the transaction sync state.
     /// </summary>
-    public Task<ItemLink> GetItemLink(SpendDb db)
-        => db.ItemLinks.Find(x => x.Id == ItemLinkId).FirstAsync();
+    public Task<ItemLink> GetItemLink(ItemLinkDataLoader loader) => loader.LoadAsync(ItemLinkId);
 
     /// <summary>
     ///     Cursor used for fetching any future updates after the latest update provided in this response. The cursor

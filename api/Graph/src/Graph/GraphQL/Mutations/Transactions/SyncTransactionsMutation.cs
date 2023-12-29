@@ -69,7 +69,6 @@ public class SyncTransactionsMutation
             UserId = ctx.UserId!.Value,
             InsertedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            Version = 1
         }));
 
         var updated = transactions.Modified.Select(x =>
@@ -81,7 +80,6 @@ public class SyncTransactionsMutation
                     UserId = ctx.UserId!.Value,
                     InsertedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
-                    Version = 1
                 })
             {
                 IsUpsert = true
@@ -108,7 +106,6 @@ public class SyncTransactionsMutation
                 UserId = ctx.UserId!.Value,
                 ItemLinkId = itemLink.Id,
                 Cursor = nextCursor,
-                Version = 1,
                 InsertedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             });
