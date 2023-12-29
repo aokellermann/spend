@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using Spend.Graph.Domain.Entities;
+using Spend.Graph.Domain.Errors;
 
 namespace Spend.Graph.Infrastructure;
 
@@ -40,4 +41,14 @@ public static class MongoQueryExtensions
     public static UpdateDefinition<TEntity> Version<TEntity>(this UpdateDefinition<TEntity> update)
         where TEntity : IVersioned
         => update.Inc(x => x.Version, 1);
-}
+
+    public static async Task<TEntity> FindRequiredAuditable<TId, TEntity>(this IMongoCollection<TEntity> collection,
+    TId id, long version, UserContext ctx)
+            where TId : notnull
+            where TEntity : IEntity<TId>, IHasTenant, IVersioned
+    {
+        var cursor = await collection.FindAsync(collection.AuditableFilter(id, version, ctx));
+        var res = await cursor.FirstOrDefaultAsync();
+        return res ?? throw new NotFoundException(typeof(TEntity), id);
+    }
+ }

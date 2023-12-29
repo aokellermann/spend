@@ -32,13 +32,7 @@ public class UpdateTransactionCategoryMutation
         using var sesh = await db.Db.Client.StartSessionAsync();
         sesh.StartTransaction();
 
-        var category = await (await db.TransactionCategories.FindAsync(
-                db.TransactionCategories.AuditableFilter(transactionCategoryId, transactionCategoryVersion, ctx)))
-            .FirstOrDefaultAsync();
-        if (category is null)
-        {
-            throw new NotFoundException(typeof(TransactionCategory), transactionCategoryId);
-        }
+        await db.TransactionCategories.FindRequiredAuditable(transactionCategoryId, transactionCategoryVersion, ctx);
 
         var res = await db.Transactions.FindOneAndUpdateAsync(
             db.Transactions.AuditableFilter(transactionId, transactionVersion, ctx),
