@@ -5,9 +5,6 @@ using Spend.Graph.Infrastructure;
 
 namespace Spend.Graph.GraphQL.Mutations.User;
 
-/// <summary>
-///     Initialize user mutation.
-/// </summary>
 [ExtendObjectType(OperationType.Mutation)]
 public class InitializeUserMutation
 {

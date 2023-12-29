@@ -1,6 +1,5 @@
 using Going.Plaid;
 using Going.Plaid.Item;
-using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Driver;
 using Spend.Graph.Domain.Entities.Items;
@@ -8,9 +7,6 @@ using Spend.Graph.Infrastructure;
 
 namespace Spend.Graph.GraphQL.Mutations.Items;
 
-/// <summary>
-///     Create item link mutation.
-/// </summary>
 [ExtendObjectType(OperationType.Mutation)]
 public class CreateItemLinkMutation
 {
@@ -31,7 +27,6 @@ public class CreateItemLinkMutation
     /// <summary>
     ///     Creates an <see cref="ItemLink"/> from a public token. See https://plaid.com/docs/link/.
     /// </summary>
-    [Authorize]
     public async Task<ItemLink> CreateItemLink(Request request, UserContext ctx, PlaidClient plaid,
         SpendDb db)
     {

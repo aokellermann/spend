@@ -1,16 +1,12 @@
 using Going.Plaid;
 using Going.Plaid.Entity;
 using Going.Plaid.Link;
-using HotChocolate.Authorization;
 using HotChocolate.Language;
 using Spend.Graph.Infrastructure;
 using Spend.Graph.Infrastructure.Plaid;
 
 namespace Spend.Graph.GraphQL.Mutations.Items;
 
-/// <summary>
-///     Create link token mutation.
-/// </summary>
 [ExtendObjectType(OperationType.Mutation)]
 public class CreateLinkTokenMutation
 {
@@ -32,7 +28,6 @@ public class CreateLinkTokenMutation
     /// <summary>
     ///     Creates a link token. See https://plaid.com/docs/link/.
     /// </summary>
-    [Authorize]
     public async Task<Response> CreateLinkToken(UserContext ctx, PlaidClient plaid)
     {
         var res = await plaid.LinkTokenCreateAsync(new LinkTokenCreateRequest

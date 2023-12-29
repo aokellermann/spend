@@ -7,12 +7,14 @@ namespace Spend.Graph.Domain.Entities.Transactions;
 
 public static class DefaultTransactionCategories
 {
+    public const string UnknownCategoryName = "UNKNOWN";
     public static IReadOnlyList<DefaultTransactionCategory> AsList => _asList.Value;
     public static IReadOnlyDictionary<string, DefaultTransactionCategory> ByName => _byName.Value;
 
     private static readonly Lazy<IReadOnlyList<DefaultTransactionCategory>> _asList
         = new(() => new List<DefaultTransactionCategory>()
         {
+            new(UnknownCategoryName, null, null, Array.Empty<DefaultTransactionCategory>()),
 <1>
         });
         
@@ -26,10 +28,12 @@ public static class DefaultTransactionCategories
 """
 
 parent_template = """
-                new (<1>, new DefaultTransactionCategory[]{<2>}),
+            new(<1>, new DefaultTransactionCategory[]{
+<2>
+            }),
 """
 
-child_template = """                    new(<1>),"""
+child_template = """                new(<1>),"""
 
 
 def main():
@@ -48,7 +52,8 @@ def main():
         for parent in parents:
             parent_s = parent_template.replace("<1>", "\"{}\", null, null".format(parent))
             children = d[parent]
-            children_s = "\n".join([child_template.replace("<1>", "\"{}\", \"{}\", \"{}\", null".format(child[1], child[2].replace('\"', ''), child[0])) for child in children])
+            children_s = "\n".join([child_template.replace("<1>", "\"{}\", \"{}\", \"{}\", null".format(child[1], child[
+                2].replace('\"', ''), child[0])) for child in children])
             all_s += parent_s.replace("<2>", children_s)
 
         file_s = file_template.replace("<1>", all_s)

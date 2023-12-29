@@ -20,3 +20,10 @@ db.Transactions.createIndex({
     name: "ix_userId",
     unique: false
 })
+
+db.TransactionCategories.createIndex({
+    userId: 1
+}, {
+    name: "ix_userId",
+    unique: false
+})

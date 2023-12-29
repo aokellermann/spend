@@ -1,7 +1,6 @@
 using System.Data;
 using Going.Plaid;
 using Going.Plaid.Transactions;
-using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -10,9 +9,6 @@ using Spend.Graph.Infrastructure;
 
 namespace Spend.Graph.GraphQL.Mutations.Transactions;
 
-/// <summary>
-///     Sync transactions mutation.
-/// </summary>
 [ExtendObjectType(OperationType.Mutation)]
 public class SyncTransactionsMutation
 {
@@ -43,7 +39,6 @@ public class SyncTransactionsMutation
     /// <summary>
     ///     Sync transactions for an item.
     /// </summary>
-    [Authorize]
     public async Task<Response> SyncTransactions(Request request, UserContext ctx, PlaidClient plaid, SpendDb db)
     {
         var itemLink = await db.ItemLinks
@@ -62,39 +57,52 @@ public class SyncTransactionsMutation
             Cursor = state?.Cursor != string.Empty ? state?.Cursor : null
         });
 
+        Dictionary<string, ObjectId>? categoriesByName = null;
+        if (transactions.Added.Count != 0)
+        {
+            var categoryNames = transactions.Added
+                .Select(x => x.PersonalFinanceCategory?.Detailed)
+                .Where(x => x is not null)
+                .Cast<string>()
+                .ToHashSet();
+            categoryNames.Add(DefaultTransactionCategories.UnknownCategoryName);
+            var categories = await db.TransactionCategories.FindAsync(
+                Builders<TransactionCategory>.Filter.Eq(x => x.UserId, ctx.UserId!.Value) &
+                Builders<TransactionCategory>.Filter.In(x => x.Name, categoryNames));
+
+            categoriesByName = new Dictionary<string, ObjectId>();
+            await categories.ForEachAsync(x => categoriesByName.Add(x.Name, x.Id));
+        }
+
         var added = transactions.Added.Select(x => new InsertOneModel<Transaction>(new Transaction
         {
             ItemLinkId = itemLink.Id,
             PlaidTransaction = x,
+            TransactionCategoryId = categoriesByName![x.PersonalFinanceCategory?.Detailed ?? "UNKNOWN"],
             UserId = ctx.UserId!.Value,
             InsertedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         }));
 
-        var updated = transactions.Modified.Select(x =>
-            new ReplaceOneModel<Transaction>(
-                Builders<Transaction>.Filter.Eq(y => y.PlaidTransaction.TransactionId, x.TransactionId), new Transaction
-                {
-                    ItemLinkId = itemLink.Id,
-                    PlaidTransaction = x,
-                    UserId = ctx.UserId!.Value,
-                    InsertedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                })
+        var updated = transactions.Modified.Select(z =>
+            new UpdateOneModel<Transaction>(
+                Builders<Transaction>.Filter.Eq(y => y.PlaidTransaction.TransactionId, z.TransactionId),
+                Builders<Transaction>.Update
+                    .Set(x => x.PlaidTransaction, z)
+                    .CurrentDate(x => x.UpdatedAt))
             {
                 IsUpsert = true
             });
 
         var removed = transactions.Removed.Select(x =>
-            new DeleteOneModel<Transaction>(Builders<Transaction>.Filter.Eq(y => y.PlaidTransaction.TransactionId,
-                x.TransactionId)));
+            new DeleteOneModel<Transaction>(Builders<Transaction>.Filter
+                .Eq(y => y.PlaidTransaction.TransactionId, x.TransactionId)));
 
         var bulkOps = added.Cast<WriteModel<Transaction>>().Concat(updated).Concat(removed).ToArray();
 
-        BulkWriteResult<Transaction>? bulkWriteResult = null;
         if (bulkOps.Length != 0)
         {
-            bulkWriteResult = await db.Transactions.BulkWriteAsync(bulkOps);
+            await db.Transactions.BulkWriteAsync(bulkOps);
         }
 
         var nextCursor = transactions.NextCursor;

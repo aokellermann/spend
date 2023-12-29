@@ -1,4 +1,3 @@
-using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Driver;
 using Spend.Graph.Domain.Entities.Transactions;
@@ -18,7 +17,6 @@ public class GetTransactionCategoriesQuery
     [UseProjection]
     [UseSorting]
     [UseFiltering]
-    [Authorize]
     public IExecutable<TransactionCategory> GetTransactionCategories(UserContext ctx, SpendDb db)
         => db.TransactionCategories.Find(x => x.UserId == ctx.UserId!.Value && x.ParentTransactionCategoryId == null).AsExecutable();
 }

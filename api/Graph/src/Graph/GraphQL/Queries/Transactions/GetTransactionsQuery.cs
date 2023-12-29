@@ -1,4 +1,3 @@
-using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Driver;
 using Spend.Graph.Domain.Entities.Transactions;
@@ -18,7 +17,6 @@ public class GetTransactionsQuery
     [UseProjection]
     [UseSorting]
     [UseFiltering]
-    [Authorize]
     public IExecutable<Transaction> GetTransactions(UserContext ctx, SpendDb db)
         => db.Transactions.Find(x => x.UserId == ctx.UserId!.Value).AsExecutable();
 }

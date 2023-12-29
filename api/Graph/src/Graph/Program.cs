@@ -16,8 +16,6 @@ builder.Services.AddGraph();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddValidation();
-
 builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddPlaid(builder.Configuration);
