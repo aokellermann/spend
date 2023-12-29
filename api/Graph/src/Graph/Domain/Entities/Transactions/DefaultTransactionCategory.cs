@@ -33,5 +33,5 @@ public class DefaultTransactionCategory
     /// <summary>
     ///     If a parent category, its children.
     /// </summary>
-    public DefaultTransactionCategory[]? ChildDefaultTransactionCategories { get; set; }
+    public DefaultTransactionCategory[]? ChildDefaultTransactionCategories { get; }
 }

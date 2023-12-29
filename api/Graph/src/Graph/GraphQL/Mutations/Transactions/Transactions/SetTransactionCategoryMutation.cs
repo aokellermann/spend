@@ -5,7 +5,7 @@ using Spend.Graph.Domain.Entities.Transactions;
 using Spend.Graph.Domain.Errors;
 using Spend.Graph.Infrastructure;
 
-namespace Spend.Graph.GraphQL.Mutations.Transactions;
+namespace Spend.Graph.GraphQL.Mutations.Transactions.Transactions;
 
 [ExtendObjectType(OperationType.Mutation)]
 public class SetTransactionCategoryMutation
