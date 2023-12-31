@@ -7,7 +7,7 @@ db.ItemLinks.createIndex({
     unique: false
 })
 
-db.TransactionsSyncStates.createIndex({
+db.TransactionSyncStates.createIndex({
     userId: 1
 }, {
     name: "ix_userId",
@@ -15,6 +15,13 @@ db.TransactionsSyncStates.createIndex({
 })
 
 db.Transactions.createIndex({
+    userId: 1
+}, {
+    name: "ix_userId",
+    unique: false
+})
+
+db.TransactionCategories.createIndex({
     userId: 1
 }, {
     name: "ix_userId",

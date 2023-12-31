@@ -16,8 +16,6 @@ builder.Services.AddGraph();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddValidation();
-
 builder.Services.AddMongoDb(builder.Configuration);
 
 builder.Services.AddPlaid(builder.Configuration);
@@ -28,7 +26,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseWebSockets();
-app.MapGraphQLHttp();
+app.MapGraphQLHttp().RequireAuthorization();
 app.MapGraphQLSchema();
 
 await app.RunAsync();

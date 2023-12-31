@@ -6,7 +6,7 @@ namespace Spend.Graph.Domain.Entities;
 public interface IVersioned
 {
     /// <summary>
-    ///     Entity version. Starts at 1 for new entities.
+    ///     Entity version. Starts at 0 for new entities.
     /// </summary>
     long Version { get; }
 }

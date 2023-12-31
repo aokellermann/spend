@@ -1,4 +1,3 @@
-using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Driver;
 using Spend.Graph.Domain.Entities.Items;
@@ -18,7 +17,6 @@ public class GetItemLinksQuery
     [UseProjection]
     [UseSorting]
     [UseFiltering]
-    [Authorize]
     public IExecutable<ItemLink> GetItemLinks(UserContext ctx, SpendDb db)
         => db.ItemLinks.Find(x => x.UserId == ctx.UserId!.Value).AsExecutable();
 }

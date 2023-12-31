@@ -1,6 +1,5 @@
 using Going.Plaid;
 using HotChocolate.Subscriptions;
-using MongoDB.Bson;
 using Spend.Graph.Infrastructure;
 using Spend.Graph.Types;
 
@@ -15,7 +14,7 @@ public static class GraphQLSetup
             .InitializeOnStartup()
             .AddQueryType()
             .AddMutationType()
-            .AddMutationConventions()
+            .AddMutationConventions(applyToAllMutations: true)
             // .AddDefaultTransactionScopeHandler()
             // .AddSubscriptionType()
             .AddProjections()
@@ -32,9 +31,7 @@ public static class GraphQLSetup
             .RegisterService<UserContext>()
             .AddAuthorization()
             .TryAddTypeInterceptor<PlaidTypeInterceptor>()
-            .BindRuntimeType<ObjectId, IdType>()
-            .AddTypeConverter<ObjectId, string>(o => o.ToString())
-            .AddTypeConverter<string, ObjectId>(ObjectId.Parse)
+            .AddObjectIdType()
             ;
     }
 }

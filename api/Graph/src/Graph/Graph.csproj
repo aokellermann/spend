@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <NoWarn>$(NoWarn);1591</NoWarn>
         <AWSProjectType>Lambda</AWSProjectType>
         <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -14,8 +15,6 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.6.1" />
-        <PackageReference Include="FairyBread" Version="10.0.0" />
-        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="Going.Plaid" Version="6.13.0" >
             <CopyToOutputDirectory>xmldoc</CopyToOutputDirectory>
         </PackageReference>

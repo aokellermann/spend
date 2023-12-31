@@ -6,10 +6,10 @@ using Spend.Graph.Infrastructure;
 namespace Spend.Graph.GraphQL.Queries.Transactions;
 
 /// <summary>
-///     Get transactions query.
+///     Get transaction categories query.
 /// </summary>
 [ExtendObjectType(OperationType.Query)]
-public class GetTransactionsQuery
+public class GetTransactionCategoriesQuery
 {
     /// <summary>
     ///     Get transactions.
@@ -17,6 +17,6 @@ public class GetTransactionsQuery
     [UseProjection]
     [UseSorting]
     [UseFiltering]
-    public IExecutable<Transaction> GetTransactions(UserContext ctx, SpendDb db)
-        => db.Transactions.Find(x => x.UserId == ctx.UserId!.Value).AsExecutable();
+    public IExecutable<TransactionCategory> GetTransactionCategories(UserContext ctx, SpendDb db)
+        => db.TransactionCategories.Find(x => x.UserId == ctx.UserId!.Value && x.ParentTransactionCategoryId == null).AsExecutable();
 }

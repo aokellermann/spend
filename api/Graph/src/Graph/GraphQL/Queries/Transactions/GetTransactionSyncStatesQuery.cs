@@ -1,4 +1,3 @@
-using HotChocolate.Authorization;
 using HotChocolate.Language;
 using MongoDB.Driver;
 using Spend.Graph.Domain.Entities.Transactions;
@@ -10,7 +9,7 @@ namespace Spend.Graph.GraphQL.Queries.Transactions;
 ///     Get transaction sync state query.
 /// </summary>
 [ExtendObjectType(OperationType.Query)]
-public class GetTransactionsSyncStatesQuery
+public class GetTransactionSyncStatesQuery
 {
     /// <summary>
     ///     Get transaction sync states.
@@ -18,7 +17,6 @@ public class GetTransactionsSyncStatesQuery
     [UseProjection]
     [UseSorting]
     [UseFiltering]
-    [Authorize]
-    public IExecutable<TransactionsSyncState> GetTransactionsSyncStates(UserContext ctx, SpendDb db)
+    public IExecutable<TransactionsSyncState> GetTransactionSyncStates(UserContext ctx, SpendDb db)
         => db.TransactionSyncStates.Find(x => x.UserId == ctx.UserId!.Value).AsExecutable();
 }
