@@ -66,7 +66,7 @@ export TF_VAR_account_alias=myaccountname
 
 terraform -chdir=terraform/meta/bootstrap apply
 
-cp terraform/meta/config.s3.tfbackend.example erraform/meta/config.s3.tfbackend
+cp terraform/meta/config.s3.tfbackend.example terraform/meta/config.s3.tfbackend
 sed -i 's/<account_alias>/'"$TF_VAR_account_alias"'/g' terraform/meta/config.s3.tfbackend
 ```
 

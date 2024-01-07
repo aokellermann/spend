@@ -75,6 +75,11 @@ resource "aws_lambda_function" "graph_lambda" {
   runtime       = "dotnet6"
   memory_size   = "256"
   timeout       = "30"
+  vpc_config {
+    security_group_ids          = [aws_security_group.graph.id]
+    subnet_ids                  = data.aws_subnets.private.ids
+    ipv6_allowed_for_dual_stack = false
+  }
 
   role = aws_iam_role.iam_for_lambda.arn
 
@@ -142,7 +147,7 @@ resource "aws_api_gateway_deployment" "gateway_deploy" {
   ]
 
   rest_api_id = "${aws_api_gateway_rest_api.api_gateway.id}"
-  stage_name  = "test"
+  stage_name  = "api"
 }
 
 resource "aws_lambda_permission" "apigw" {
