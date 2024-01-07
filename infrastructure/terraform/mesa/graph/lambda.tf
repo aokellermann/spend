@@ -1,3 +1,7 @@
+locals {
+  package = "../../../../api/Graph/src/Graph/bin/Release/net6.0/Graph.zip"
+}
+
 resource "aws_kms_key_policy" "example" {
   key_id = aws_kms_key.key.id
   policy = jsonencode({
@@ -68,13 +72,14 @@ resource "aws_iam_role" "iam_for_lambda" {
 
 # run dotnet lambda package to create the zip file
 resource "aws_lambda_function" "graph_lambda" {
-  function_name = "graph"
-  description   = "GraphQL API"
-  filename      = "/home/aokellermann/repos/spend/api/Graph/src/Graph/bin/Release/net6.0/Graph.zip"
-  handler       = "Graph"
-  runtime       = "dotnet6"
-  memory_size   = "256"
-  timeout       = "30"
+  function_name    = "graph"
+  description      = "GraphQL API"
+  filename         = local.package
+  source_code_hash = filebase64sha256(local.package)
+  handler          = "Graph"
+  runtime          = "dotnet6"
+  memory_size      = "256"
+  timeout          = "30"
   vpc_config {
     security_group_ids          = [aws_security_group.graph.id]
     subnet_ids                  = data.aws_subnets.private.ids
