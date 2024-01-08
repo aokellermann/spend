@@ -70,6 +70,30 @@ resource "aws_iam_role" "iam_for_lambda" {
   }
 }
 
+data "aws_ssm_parameter" "auth_audience" {
+  name = "/api/graph/Auth/Audience"
+}
+
+data "aws_ssm_parameter" "auth_authority" {
+  name = "/api/graph/Auth/Authority"
+}
+
+data "aws_ssm_parameter" "plaid_client_id" {
+  name = "/api/graph/Plaid/ClientId"
+}
+
+data "aws_ssm_parameter" "plaid_secret" {
+  name = "/api/graph/Plaid/Secret"
+}
+
+data "aws_ssm_parameter" "mongo_conn" {
+  name = "/api/graph/Mongo/VpcConnectionString"
+}
+
+data "aws_ssm_parameter" "mongo_password" {
+  name = "/api/graph/Mongo/Password"
+}
+
 # run dotnet lambda package to create the zip file
 resource "aws_lambda_function" "graph_lambda" {
   function_name    = "graph"
@@ -88,15 +112,17 @@ resource "aws_lambda_function" "graph_lambda" {
 
   role = aws_iam_role.iam_for_lambda.arn
 
+  kms_key_arn = aws_kms_key.key.arn
+
   environment {
     variables = {
-      ASPNETCORE_ENVIRONMENT  = var.env
-      Plaid__ClientId         = var.plaid_client_id
-      Plaid__Secret           = var.plaid_client_secret
-      Auth__Authority         = var.auth_authority
-      Auth__Audience          = var.auth_audience
-      Mongo__ConnectionString = var.mongo_connection_string
-      Mongo__Password         = var.mongo_password
+      ASPNETCORE_ENVIRONMENT     = var.env
+      Plaid__ClientId            = data.aws_ssm_parameter.plaid_client_id.value
+      Plaid__Secret              = data.aws_ssm_parameter.plaid_secret.value
+      Auth__Authority            = data.aws_ssm_parameter.auth_authority.value
+      Auth__Audience             = data.aws_ssm_parameter.auth_audience.value
+      Mongo__VpcConnectionString = data.aws_ssm_parameter.mongo_conn.value
+      Mongo__Password            = data.aws_ssm_parameter.mongo_password.value
     }
   }
 }
