@@ -1,0 +1,11 @@
+version: 2
+registries:
+  nuget-public:
+    type: nuget-feed
+    url: https://api.nuget.org/v3/index.json
+updates:
+  - package-ecosystem: nuget
+    directory: "/api"
+    registries: "*"
+    schedule:
+      interval: "weekly"
