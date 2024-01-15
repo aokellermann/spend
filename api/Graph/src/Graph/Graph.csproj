@@ -15,7 +15,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.6.1" />
-        <PackageReference Include="Going.Plaid" Version="6.13.0" >
+        <PackageReference Include="Going.Plaid" Version="6.15.0" >
             <CopyToOutputDirectory>xmldoc</CopyToOutputDirectory>
         </PackageReference>
         <PackageReference Include="HotChocolate.AspNetCore" Version="13.8.1" />
