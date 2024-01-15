@@ -1,3 +1,0 @@
-[submodule "infrastructure/terraform/modules/terraform-aws-fck-nat"]
-	path = infrastructure/terraform/modules/terraform-aws-fck-nat
-	url = git@github.com:aokellermann/terraform-aws-fck-nat.git
