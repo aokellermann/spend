@@ -10,7 +10,8 @@
         "Plaid__Secret": "",
         "Auth__Authority": "",
         "Auth__Audience": "",
-        "Mongo__ConnectionString": "",
+        "Mongo__InternetConnectionString": "",
+        "Mongo__VpcConnectionString": "",
         "Mongo__Password": ""
       }
     }

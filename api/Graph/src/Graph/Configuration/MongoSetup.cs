@@ -21,7 +21,9 @@ public static class MongoSetup
 #pragma warning restore CS0618
         BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
-        var connectionString = MongoUrl.Create(configuration["Mongo:ConnectionString"]!
+        var connectionString =
+            // if running on VPC, need to use PrivateLink endpoint
+            MongoUrl.Create(configuration[$"Mongo:{(EnvironmentHelpers.IsLambda ? "Vpc" : "Internet")}ConnectionString"]!
             .Replace("<password>", configuration["Mongo:Password"]!));
         var settingsServerApi = new ServerApi(ServerApiVersion.V1);
         services.AddScoped<IMongoDatabase>(sp =>

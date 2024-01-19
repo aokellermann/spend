@@ -7,7 +7,7 @@ namespace Spend.Graph.Configuration;
 
 public static class GraphQLSetup
 {
-    public static void AddGraph(this IServiceCollection services)
+    public static void AddGraph(this IServiceCollection services, IHostEnvironment environment)
     {
         services
             .AddGraphQLServer()
@@ -32,6 +32,8 @@ public static class GraphQLSetup
             .AddAuthorization()
             .TryAddTypeInterceptor<PlaidTypeInterceptor>()
             .AddObjectIdType()
+            .ModifyRequestOptions(x => x.IncludeExceptionDetails = !environment.IsProduction())
+            .AddDiagnosticEventListener<GraphQLErrorLogger>()
             ;
     }
 }
