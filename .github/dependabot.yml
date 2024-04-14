@@ -1,34 +1,34 @@
-version: 2
-updates:
-  - package-ecosystem: nuget
-    directory: "/api"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: pub
-    directory: "/app"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: terraform
-    directory: "/infrastructure/terraform/meta/bootstrap"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: terraform
-    directory: "/infrastructure/terraform/mesa/ciam"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: terraform
-    directory: "/infrastructure/terraform/mesa/data"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: terraform
-    directory: "/infrastructure/terraform/mesa/graph"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: terraform
-    directory: "/infrastructure/terraform/mesa/secrets"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: terraform
-    directory: "/infrastructure/terraform/mesa/vpc"
-    schedule:
-      interval: "weekly"
+# version: 2
+# updates:
+#   - package-ecosystem: nuget
+#     directory: "/api"
+#     schedule:
+#       interval: "weekly"
+#   - package-ecosystem: pub
+#     directory: "/app"
+#     schedule:
+#       interval: "weekly"
+#   - package-ecosystem: terraform
+#     directory: "/infrastructure/terraform/meta/bootstrap"
+#     schedule:
+#       interval: "weekly"
+#   - package-ecosystem: terraform
+#     directory: "/infrastructure/terraform/mesa/ciam"
+#     schedule:
+#       interval: "weekly"
+#   - package-ecosystem: terraform
+#     directory: "/infrastructure/terraform/mesa/data"
+#     schedule:
+#       interval: "weekly"
+#   - package-ecosystem: terraform
+#     directory: "/infrastructure/terraform/mesa/graph"
+#     schedule:
+#       interval: "weekly"
+#   - package-ecosystem: terraform
+#     directory: "/infrastructure/terraform/mesa/secrets"
+#     schedule:
+#       interval: "weekly"
+#   - package-ecosystem: terraform
+#     directory: "/infrastructure/terraform/mesa/vpc"
+#     schedule:
+#       interval: "weekly"
